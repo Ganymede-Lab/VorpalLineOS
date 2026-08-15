@@ -13,3 +13,6 @@ env/
 .vscode/
 .idea/
 .gemini/
+
+# Generated Hardware Abstraction
+hal/pin_map.py

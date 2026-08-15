@@ -1,0 +1,1 @@
+# HAL module init

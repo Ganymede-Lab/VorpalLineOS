@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs and Tools
+.vscode/
+.idea/
+.gemini/

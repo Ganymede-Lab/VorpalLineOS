@@ -12,28 +12,30 @@ VorpaLine OS is a highly optimized, MicroPython-based operating system designed 
 
 ## Installation & Deployment
 
-1. **Compile Bytecode:** Run the included `compile_shards.py` script on your host machine to generate `.mpy` files for all core and HAL modules.
+1. **Build and Configure:** Run the `build_shard.py` script to select a profile (e.g., Host Shard or ROS 2 Shard). This will automatically copy the profile to `shard_profile.json` and cross-compile all `.py` files in `core/` and `hal/` to `.mpy` bytecode using `compile_shards.py`.
    ```bash
-   python compile_shards.py
+   python build_shard.py
    ```
-2. **Upload to ESP32:** Upload `boot.py`, `main.py`, `shard_profile.json`, and the generated `.mpy` files to the root directory of your ESP32. (Do **not** upload the raw `.py` files for `core/` and `hal/` to save flash and RAM).
-3. **Hardware Wiring:** Connect your host device to the ESP32's UART2 pins:
-   * **ESP32 TX:** GPIO 17
-   * **ESP32 RX:** GPIO 16
-   * **GND:** Must share a common ground with the host.
-   * *Note: If your host device (e.g., standard Arduino Uno) uses 5V logic, you MUST use a logic level converter or a voltage divider on the line connecting the Host TX to the ESP32 RX to avoid damaging the 3.3V ESP32.*
+2. **Upload to ESP32:** Upload `boot.py`, `main.py`, `shard_profile.json`, and the generated `.mpy` files (in their respective `core/` and `hal/` directories) to the root directory of your ESP32. (Do **not** upload the raw `.py` files to save flash and RAM).
+3. **Hardware Wiring:** Connect your host device to the ESP32:
+   * **Cyberdeck Bridge (UART2):** TX (GPIO 17), RX (GPIO 16)
+   * **ROS 2 USB Bridge:** Standard USB data pins
+   * *Note: Ensure common ground and appropriate voltage logic levels (3.3V).*
 
 ## Configuration
-The `shard_profile.json` file controls the shard's identity and active modules.
+
+Profiles are stored in the `profiles/` directory. The `build_shard.py` tool sets the active profile as `shard_profile.json` in the root. 
+
+Example (`ros2_shard.json`):
 ```json
 {
-  "shard_id": "SHARD_001",
-  "role_class": "HostShard",
+  "shard_id": "ROS2_BRIDGE_001",
+  "role_class": "core.roles.ros2_shard.Ros2Shard",
   "board_type": "esp32-wroom",
   "active_modules": [
     "sys", 
     "machine",
-    "hal.cyberdeck_bridge"
+    "hal.usb_bridge"
   ]
 }
 ```

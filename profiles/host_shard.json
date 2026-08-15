@@ -1,0 +1,10 @@
+{
+  "shard_id": "SHARD_001",
+  "role_class": "core.roles.host_shard.HostShard",
+  "board_type": "esp32-wroom",
+  "active_modules": [
+    "sys", 
+    "machine",
+    "hal.cyberdeck_bridge"
+  ]
+}

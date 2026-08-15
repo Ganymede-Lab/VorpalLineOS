@@ -85,9 +85,12 @@ def main():
     for dir_name in TARGET_DIRS:
         dir_path = os.path.join(base_dir, dir_name)
         if os.path.exists(dir_path):
-            for file in os.listdir(dir_path):
-                if file.endswith(".py") and not file.startswith("__"):
-                    files_to_compile.append(os.path.join(dir_path, file))
+            for root, dirs, files in os.walk(dir_path):
+                # Ignore __pycache__ or hidden dirs
+                dirs[:] = [d for d in dirs if not d.startswith('__')]
+                for file in files:
+                    if file.endswith(".py") and not file.startswith("__"):
+                        files_to_compile.append(os.path.join(root, file))
                     
     for root_file in ROOT_FILES:
         full_path = os.path.join(base_dir, root_file)

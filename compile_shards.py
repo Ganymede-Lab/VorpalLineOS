@@ -108,8 +108,20 @@ def main():
                 # Ignore __pycache__, hidden dirs, and boards
                 dirs[:] = [d for d in dirs if not d.startswith('__') and d != "boards"]
                 for file in files:
-                    if file.endswith(".py") and not file.startswith("__"):
-                        files_to_compile.append(os.path.join(root, file))
+                    if file.endswith(".py"):
+                        if file.startswith("__"):
+                            # Copy __init__.py files directly
+                            src_init = os.path.join(root, file)
+                            rel_init = os.path.relpath(src_init, base_dir)
+                            if rel_init.startswith("src/"):
+                                rel_dest = rel_init[4:]
+                            else:
+                                rel_dest = rel_init
+                            dest_init = os.path.join(base_dir, DEPLOY_DIR, rel_dest)
+                            os.makedirs(os.path.dirname(dest_init), exist_ok=True)
+                            shutil.copyfile(src_init, dest_init)
+                        else:
+                            files_to_compile.append(os.path.join(root, file))
                         
     print(f"Found {len(files_to_compile)} module(s) to compile:\n")
     

@@ -14,7 +14,7 @@ VorpaLine OS is a highly optimized, MicroPython-based operating system designed 
 
 1. **Build and Configure:** Run the `build_shard.py` script to select a profile (e.g., Host Shard or ROS 2 Shard). This will automatically copy the profile to `shard_profile.json` and cross-compile all `.py` files in `core/` and `hal/` to `.mpy` bytecode using `compile_shards.py`.
    ```bash
-   python build_shard.py
+   python3 build_shard.py
    ```
 2. **Upload to ESP32:** Upload `boot.py`, `main.py`, `shard_profile.json`, and the generated `.mpy` files (in their respective `core/` and `hal/` directories) to the root directory of your ESP32. (Do **not** upload the raw `.py` files to save flash and RAM).
 3. **Hardware Wiring:** Connect your host device to the ESP32:

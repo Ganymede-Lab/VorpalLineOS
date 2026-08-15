@@ -14,5 +14,8 @@ env/
 .idea/
 .gemini/
 
+# Generated Output
+deploy/
+
 # Generated Hardware Abstraction
-hal/pin_map.py
+src/hal/pin_map.py

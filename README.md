@@ -12,11 +12,11 @@ VorpaLine OS is a highly optimized, MicroPython-based operating system designed 
 
 ## Installation & Deployment
 
-1. **Build and Configure:** Run the `build_shard.py` script to select a profile (e.g., Host Shard or ROS 2 Shard). This will automatically copy the profile to `shard_profile.json` and cross-compile all `.py` files in `core/` and `hal/` to `.mpy` bytecode using `compile_shards.py`.
+1. **Build and Configure:** Run the `build_shard.py` script to select a profile (e.g., Host Shard or ROS 2 Shard) and a board. This will automatically cross-compile the code and stage the final firmware in the `deploy/` directory.
    ```bash
    python3 build_shard.py
    ```
-2. **Upload to ESP32:** Upload `boot.py`, `main.py`, `shard_profile.json`, and the generated `.mpy` files (in their respective `core/` and `hal/` directories) to the root directory of your ESP32. (Do **not** upload the raw `.py` files to save flash and RAM).
+2. **Upload to ESP32:** Simply upload the entire contents of the generated `deploy/` directory to the root of your ESP32. (It contains everything needed: `boot.py`, `main.py`, the configuration, and all the compiled `.mpy` files).
 3. **Hardware Wiring:** Connect your host device to the ESP32:
    * **Cyberdeck Bridge (UART2):** TX (GPIO 17), RX (GPIO 16)
    * **ROS 2 USB Bridge:** Standard USB data pins

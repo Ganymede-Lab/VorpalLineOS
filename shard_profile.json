@@ -1,10 +1,10 @@
 {
-  "shard_id": "SHARD_001",
-  "role_class": "core.roles.host_shard.HostShard",
+  "shard_id": "ROS2_BRIDGE_001",
+  "role_class": "core.roles.ros2_shard.Ros2Shard",
   "board_type": "adafruit_metro_esp32_s2",
   "active_modules": [
     "sys",
     "machine",
-    "hal.cyberdeck_bridge"
+    "hal.usb_bridge"
   ]
 }

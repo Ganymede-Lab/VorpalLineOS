@@ -9,8 +9,8 @@ import sys
 import subprocess
 import shutil
 
-TARGET_DIRS = ["core", "hal"]
-ROOT_FILES = [] # boot.py and main.py typically remain .py on filesystem root
+TARGET_DIRS = ["src/core", "src/hal"]
+DEPLOY_DIR = "deploy"
 
 def check_mpy_cross():
     """Verify if mpy-cross is installed on the host system."""
@@ -43,24 +43,34 @@ def check_mpy_cross():
 
 def compile_file(compiler_cmd, src_path, arch="xtensawin"):
     """Compiles a single .py file to .mpy targeting the ESP32 Xtensa architecture."""
-    mpy_path = os.path.splitext(src_path)[0] + ".mpy"
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    rel_src = os.path.relpath(src_path, base_dir)
+    
+    if rel_src.startswith("src/"):
+        rel_dest = rel_src[4:]
+    else:
+        rel_dest = rel_src
+        
+    mpy_dest = os.path.join(base_dir, DEPLOY_DIR, os.path.splitext(rel_dest)[0] + ".mpy")
+    os.makedirs(os.path.dirname(mpy_dest), exist_ok=True)
+    
     cmd = compiler_cmd.split() + [
         f"-march={arch}",
         "-O3", 
         "-s", os.path.basename(src_path), 
         src_path, 
-        "-o", mpy_path
+        "-o", mpy_dest
     ]
     
     res = subprocess.run(cmd, capture_output=True, text=True)
     if res.returncode == 0:
         orig_size = os.path.getsize(src_path)
-        mpy_size = os.path.getsize(mpy_path)
+        mpy_size = os.path.getsize(mpy_dest)
         reduction = (1 - mpy_size/orig_size) * 100
-        print(f"  [OK] {src_path} -> {mpy_path} ({orig_size}B -> {mpy_size}B, {reduction:.1f}% reduction)")
+        print(f"  [OK] {rel_src} -> {os.path.relpath(mpy_dest, base_dir)} ({orig_size}B -> {mpy_size}B, {reduction:.1f}% reduction)")
         return True
     else:
-        print(f"  [FAIL] {src_path}: {res.stderr.strip()}")
+        print(f"  [FAIL] {rel_src}: {res.stderr.strip()}")
         return False
 
 def main():
@@ -79,34 +89,37 @@ def main():
     
     print(f"Using compiler: {compiler}\n")
     
-    files_to_compile = []
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(base_dir, DEPLOY_DIR), exist_ok=True)
+    
+    # Copy boot files
+    print("Copying core boot files...")
+    shutil.copyfile(os.path.join(base_dir, "src", "boot.py"), os.path.join(base_dir, DEPLOY_DIR, "boot.py"))
+    shutil.copyfile(os.path.join(base_dir, "src", "main.py"), os.path.join(base_dir, DEPLOY_DIR, "main.py"))
+    print("  [OK] src/boot.py -> deploy/boot.py")
+    print("  [OK] src/main.py -> deploy/main.py\n")
+    
+    files_to_compile = []
     
     for dir_name in TARGET_DIRS:
         dir_path = os.path.join(base_dir, dir_name)
         if os.path.exists(dir_path):
             for root, dirs, files in os.walk(dir_path):
-                # Ignore __pycache__ or hidden dirs
-                dirs[:] = [d for d in dirs if not d.startswith('__')]
+                # Ignore __pycache__, hidden dirs, and boards
+                dirs[:] = [d for d in dirs if not d.startswith('__') and d != "boards"]
                 for file in files:
                     if file.endswith(".py") and not file.startswith("__"):
                         files_to_compile.append(os.path.join(root, file))
-                    
-    for root_file in ROOT_FILES:
-        full_path = os.path.join(base_dir, root_file)
-        if os.path.exists(full_path):
-            files_to_compile.append(full_path)
-            
+                        
     print(f"Found {len(files_to_compile)} module(s) to compile:\n")
     
     success_count = 0
     for file_path in files_to_compile:
-        rel_path = os.path.relpath(file_path, base_dir)
         if compile_file(compiler, file_path):
             success_count += 1
             
     print(f"\nCompilation finished: {success_count}/{len(files_to_compile)} succeeded.")
-    print("Pre-compiled .mpy files are ready to deploy to ESP32 flash.")
+    print("The deploy/ folder is ready to be uploaded to the ESP32 flash.")
     return 0
 
 if __name__ == "__main__":

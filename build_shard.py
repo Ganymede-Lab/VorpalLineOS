@@ -5,9 +5,10 @@ import shutil
 import json
 
 PROFILES_DIR = "profiles"
-BOARDS_DIR = os.path.join("hal", "boards")
-ROOT_PROFILE = "shard_profile.json"
-HAL_PIN_MAP = os.path.join("hal", "pin_map.py")
+BOARDS_DIR = os.path.join("src", "hal", "boards")
+DEPLOY_DIR = "deploy"
+ROOT_PROFILE = os.path.join(DEPLOY_DIR, "shard_profile.json")
+HAL_PIN_MAP = os.path.join("src", "hal", "pin_map.py")
 
 def main():
     print("==================================================")
@@ -56,13 +57,14 @@ def main():
             
         selected_profile = profiles[p_idx]
         
-        # 1. Copy board to hal/pin_map.py
+        # 1. Copy board to src/hal/pin_map.py
         board_src = os.path.join(BOARDS_DIR, selected_board)
         shutil.copyfile(board_src, HAL_PIN_MAP)
         board_name = selected_board.replace('.py', '')
         print(f"\n[OK] Set board to: {board_name}")
         
-        # 2. Read profile, update board_type, write to root
+        # 2. Read profile, update board_type, write to deploy/
+        os.makedirs(DEPLOY_DIR, exist_ok=True)
         prof_src = os.path.join(PROFILES_DIR, selected_profile)
         with open(prof_src, "r") as f:
             prof_data = json.load(f)
@@ -72,7 +74,7 @@ def main():
         with open(ROOT_PROFILE, "w") as f:
             json.dump(prof_data, f, indent=2)
             
-        print(f"[OK] Set active profile to: {selected_profile}")
+        print(f"[OK] Set active profile to: {selected_profile} (in deploy/)")
         
         # Trigger compile
         print("\nCompiling Shard...\n")

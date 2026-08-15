@@ -16,8 +16,9 @@ LED_PIN_MASK = const(1 << (42 - 32)) # Shifted for GPIO_OUT1_REG
 # Common Peripheral Pins (Default for Adafruit Metro ESP32-S2)
 TX0         = const(37)
 RX0         = const(38)
-UART2_TX    = const(17) # Custom
-UART2_RX    = const(16) # Custom
+CYBERDECK_UART_ID = const(1) # S2 uses UART1 for auxiliary comms
+CYBERDECK_TX      = const(17)
+CYBERDECK_RX      = const(16)
 I2C_SDA     = const(33)
 I2C_SCL     = const(34)
 SPI_MOSI    = const(35)

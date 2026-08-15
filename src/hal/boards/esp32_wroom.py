@@ -16,8 +16,9 @@ LED_PIN_MASK = const(1 << 2)
 # Common Peripheral Pins
 TX0         = const(1)
 RX0         = const(3)
-UART2_TX    = const(17) # Cyberdeck Bridge TX
-UART2_RX    = const(16) # Cyberdeck Bridge RX
+CYBERDECK_UART_ID = const(2)
+CYBERDECK_TX      = const(17)
+CYBERDECK_RX      = const(16)
 I2C_SDA     = const(21)
 I2C_SCL     = const(22)
 SPI_MOSI    = const(23)

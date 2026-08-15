@@ -2,7 +2,7 @@ from machine import UART, Pin
 import uselect
 import json
 import micropython
-from hal.pin_map import UART2_TX, UART2_RX
+from hal.pin_map import CYBERDECK_UART_ID, CYBERDECK_TX, CYBERDECK_RX
 
 try:
     from micropython import const
@@ -11,10 +11,10 @@ except ImportError:
 
 BUF_SIZE = const(256)
 
-# Initialize Hardware UART2
+# Initialize Hardware UART
 # 115200 baud, 8 data bits, no parity, 1 stop bit.
 # We set timeout=0 so the internal read is fully non-blocking.
-deck_uart = UART(2, baudrate=115200, tx=Pin(UART2_TX), rx=Pin(UART2_RX), timeout=0)
+deck_uart = UART(CYBERDECK_UART_ID, baudrate=115200, tx=Pin(CYBERDECK_TX), rx=Pin(CYBERDECK_RX), timeout=0)
 
 # Setup a non-blocking poll object for the UART stream
 poller = uselect.poll()

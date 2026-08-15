@@ -2,6 +2,12 @@
 # This script is automatically executed by MicroPython after boot.py finishes.
 
 import gc
+import time
+
+# Brief delay to allow Native USB (CDC) boards like the ESP32-S2/S3 to 
+# re-establish their serial connection with the host before printing.
+time.sleep(1.5)
+
 from core.vorpaline import VorpaLineOS
 
 def main():

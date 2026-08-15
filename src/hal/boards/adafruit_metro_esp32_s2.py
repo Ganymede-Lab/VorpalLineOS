@@ -85,3 +85,15 @@ def gpio_fast_clear_high(pin_mask: int):
     """Sets GPIO pins LOW (pins 32-53)."""
     p = ptr32(GPIO_OUT1_W1TC_REG)
     p[0] = pin_mask
+
+@micropython.viper
+def gpio_fast_toggle(pin_mask: int):
+    """Atomically toggles GPIO pins > 31 based on current hardware register state."""
+    p_out = ptr32(GPIO_OUT1_REG)
+    current: int = p_out[0]
+    if current & pin_mask:
+        p_clear = ptr32(GPIO_OUT1_W1TC_REG)
+        p_clear[0] = pin_mask
+    else:
+        p_set = ptr32(GPIO_OUT1_W1TS_REG)
+        p_set[0] = pin_mask

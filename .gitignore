@@ -19,3 +19,6 @@ deploy/
 
 # Generated Hardware Abstraction
 src/hal/pin_map.py
+
+# Documentation
+HANDOFF.md

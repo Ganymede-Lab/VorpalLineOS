@@ -46,7 +46,7 @@ def compile_file(compiler_cmd, src_path, arch="xtensawin"):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     rel_src = os.path.relpath(src_path, base_dir)
     
-    if rel_src.startswith("src/"):
+    if rel_src.startswith("src/") or rel_src.startswith("src\\"):
         rel_dest = rel_src[4:]
     else:
         rel_dest = rel_src
@@ -113,7 +113,7 @@ def main():
                             # Copy __init__.py files directly
                             src_init = os.path.join(root, file)
                             rel_init = os.path.relpath(src_init, base_dir)
-                            if rel_init.startswith("src/"):
+                            if rel_init.startswith("src/") or rel_init.startswith("src\\"):
                                 rel_dest = rel_init[4:]
                             else:
                                 rel_dest = rel_init

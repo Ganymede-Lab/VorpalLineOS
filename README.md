@@ -9,6 +9,7 @@ VorpaLine OS is a highly optimized, MicroPython-based operating system designed 
 * **Viper-Optimized HAL:** Uses `@micropython.viper` for memory-mapped register access (`hal.pin_map`), allowing for single-cycle, sub-microsecond GPIO toggling that completely bypasses the standard MicroPython `machine.Pin` overhead.
 * **Dynamic Loading:** Modules are loaded on-the-fly based on the `shard_profile.json` configuration, maximizing available heap memory.
 * **Automated Bytecode Compilation:** Includes `build_shard.py` and `compile_shards.py` to cross-compile human-readable `.py` source code into memory-efficient `.mpy` bytecode, staging it cleanly in a `deploy/` directory.
+* **Cyberpunk Inline Terminal:** A custom-built, ANSI-colored terminal interface over UART (`vrpl-os:~#`). It features native local echo, backspace handling, and colored outputs, running securely in under 13 KB of RAM. Built-in commands include `ping`, `ls`, `info`, and `read`.
 
 ## Installation & Deployment
 

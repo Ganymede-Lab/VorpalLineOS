@@ -2,6 +2,7 @@ from machine import UART, Pin
 import uselect
 import json
 import micropython
+import os
 from hal.pin_map import CYBERDECK_UART_ID, CYBERDECK_TX, CYBERDECK_RX
 
 try:
@@ -23,13 +24,22 @@ ANSI_HOME = "\x1b[H"
 # Initialize Hardware UART
 deck_uart = UART(CYBERDECK_UART_ID, baudrate=115200, tx=Pin(CYBERDECK_TX), rx=Pin(CYBERDECK_RX), timeout=0)
 
+def get_prompt():
+    try:
+        cwd = os.getcwd()
+        if cwd == "/home":
+            cwd = "~"
+    except Exception:
+        cwd = "/"
+    return f"{ANSI_GREEN}vrpl-os:{cwd}#{ANSI_RESET} "
+
 # Flush any garbage from the boot cycle
 deck_uart.read()
 
 # Clear screen and print the initial login prompt
 deck_uart.write(f"{ANSI_CLEAR}{ANSI_HOME}".encode('utf-8'))
 deck_uart.write(f"{ANSI_CYAN}/// VRPLLINE OS // CYBERDECK LINK ACTIVE \\\\\\{ANSI_RESET}\r\n\r\n".encode('utf-8'))
-deck_uart.write(f"{ANSI_GREEN}vrpl-os:~#{ANSI_RESET} ".encode('utf-8'))
+deck_uart.write(get_prompt().encode('utf-8'))
 
 # Setup a non-blocking poll object for the UART stream
 poller = uselect.poll()
@@ -73,7 +83,7 @@ def check_for_commands():
                 
                 if not cmd_str:
                     # Empty enter pressed! Just print a fresh prompt to fix "blank terminal"
-                    deck_uart.write(f"{ANSI_GREEN}vrpl-os:~#{ANSI_RESET} ".encode('utf-8'))
+                    deck_uart.write(get_prompt().encode('utf-8'))
                     continue
                     
                 return cmd_str
@@ -114,11 +124,11 @@ def send_response(data, color=None):
         if color:
             out_str = f"{color}{out_str}{ANSI_RESET}"
             
-        out_str += f"\r\n{ANSI_GREEN}vrpl-os:~#{ANSI_RESET} "
+        out_str += f"\r\n{get_prompt()}"
         
         deck_uart.write(out_str.encode('utf-8'))
     except Exception as e:
         print(f"[Cyberdeck] Error sending response: {e}")
-        error_str = f"{ANSI_RED}Error: Failed to serialize response: {str(e)}{ANSI_RESET}\r\n{ANSI_GREEN}vrpl-os:~#{ANSI_RESET} "
+        error_str = f"{ANSI_RED}Error: Failed to serialize response: {str(e)}{ANSI_RESET}\r\n{get_prompt()}"
         deck_uart.write(error_str.encode('utf-8'))
 
